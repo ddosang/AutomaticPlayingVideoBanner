@@ -65,7 +65,6 @@ class ViewController: UIViewController {
             make.top.equalTo(collectionView.snp.bottom).offset(10)
             make.left.right.equalToSuperview()
         }
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -110,7 +109,6 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFl
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
         if cardContents[indexPath.item].hasSuffix(".mov") {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "VideoCell", for: indexPath) as! VideoCell
             cell.configure(video: cardContents[indexPath.item])
@@ -128,7 +126,6 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFl
 }
 
 extension ViewController {
-    
     func playFirstVisibleVideo(_ shouldPlay:Bool = true) {
         let cells = collectionView.visibleCells.sorted {
             collectionView.indexPath(for: $0)?.item ?? 0 < collectionView.indexPath(for: $1)?.item ?? 0
@@ -152,5 +149,4 @@ extension ViewController {
         cellRect = cell.convert(cell.bounds, to: collectionView.superview)
         return collectionView.frame.contains(cellRect)
     }
-    
 }

@@ -16,7 +16,7 @@ class PlayerView: UIView {
         return AVPlayerLayer.self
     }
     
-    private var assetPlayer:AVPlayer? {
+    private var assetPlayer: AVPlayer? {
         didSet {
             DispatchQueue.main.async {
                 if let layer = self.layer as? AVPlayerLayer {
@@ -26,7 +26,7 @@ class PlayerView: UIView {
         }
     }
     
-    private var playerItem:AVPlayerItem?
+    private var playerItem: AVPlayerItem?
     private var urlAsset: AVURLAsset?
     
     var isMuted: Bool = true {
@@ -53,7 +53,7 @@ class PlayerView: UIView {
         }
     }
     
-    func prepareToPlay(withUrl url:URL, shouldPlayImmediately: Bool = false) {
+    func prepareToPlay(withUrl url: URL, shouldPlayImmediately: Bool = false) {
         guard !(self.url == url && assetPlayer != nil && assetPlayer?.error == nil) else {
             if shouldPlayImmediately {
                 play()
