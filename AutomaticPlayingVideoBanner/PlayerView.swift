@@ -100,7 +100,6 @@ class PlayerView: UIView {
         DispatchQueue.main.async {
             guard let videoPlayer = self.assetPlayer else { return }
             videoPlayer.seek(to: .zero)
-            videoPlayer.play()
         }
     }
     
