@@ -140,7 +140,7 @@ extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.frame.size.width != 0 {
             let value = (scrollView.contentOffset.x / scrollView.frame.width)
-            pageControl.currentPage = Int(round(value))
+            pageControl.currentPage = Int(round(value)) - 1
         }
         playFirstVisibleVideo()
     }
@@ -169,7 +169,7 @@ extension ViewController: UIScrollViewDelegate {
 
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        pageControl.numberOfPages = cardContents.count
+        pageControl.numberOfPages = cardContents.count - 2
         return self.cardContents.count
     }
     
