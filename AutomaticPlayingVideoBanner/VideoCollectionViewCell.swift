@@ -50,14 +50,14 @@ class VideoCollectionViewCell: UICollectionViewCell {
     
     // 우리는 로컬 비디오를 재생할 것이므로, 이렇게!
     func configure(video file: String) {
-      let file = file.components(separatedBy: ".")
-      
-      guard let path = Bundle.main.path(forResource: file[0], ofType: file[1]) else {
-        debugPrint( "\(file.joined(separator: ".")) not found")
-        return
-      }
-      let url = URL(fileURLWithPath: path)
-      self.url = url
-      playerView.prepareToPlay(withUrl: url, shouldPlayImmediately: false)
+        let file = file.components(separatedBy: ".")
+        
+        guard let path = Bundle.main.path(forResource: file[0], ofType: file[1]) else {
+            debugPrint( "\(file.joined(separator: ".")) not found")
+            return
+        }
+        let url = URL(fileURLWithPath: path)
+        self.url = url
+        playerView.prepareToPlay(withUrl: url, shouldPlayImmediately: false)
     }
 }

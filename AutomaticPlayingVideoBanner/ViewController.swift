@@ -10,13 +10,25 @@ import SnapKit
 
 class ViewController: UIViewController {
     
+    // MARK: - typealias
+    
     typealias VideoCell = VideoCollectionViewCell
     typealias ImageCell = ImageCollectionViewCell
+    
+    
+    // MARK: - properties
     
     private var cardContents: [String] = ["picka.png", "0.jpg", "picka.mov", "1.jpg", "picka.mov", "2.jpg", "picka.mov", "0.jpg"]
     
     private var nowPage: Int = 1 {
         didSet {
+            // 스크롤 될 때만이 아니라 컬렉션뷰를 눌러도 VoiceOver 나오게
+            if cardContents[nowPage].hasSuffix(".mov") {
+                collectionView.accessibilityLabel = "동영상 \(nowPage)"
+            } else {
+                collectionView.accessibilityLabel = "사진 \(nowPage)"
+            }
+            
             setAutoCardTimer()
         }
     }
@@ -52,6 +64,8 @@ class ViewController: UIViewController {
     
     lazy var pageControl = UIPageControl()
 
+    // MARK: - View LifeCycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -76,6 +90,9 @@ class ViewController: UIViewController {
         // MARK: - Background Observer
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedToForeground(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appMovedBackground), name: UIScene.willDeactivateNotification, object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(setAutoCardTimer), name: UIAccessibility.voiceOverStatusDidChangeNotification, object: nil)
+        setVoiceOver()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -89,6 +106,8 @@ class ViewController: UIViewController {
         initCardView()
     }
     
+    // MARK: - App LifeCycle
+    
     @objc func appMovedToForeground(_ notification: Notification) {
         setAutoCardTimer()
         playFirstVisibleVideo()
@@ -100,6 +119,7 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - CardView
 extension ViewController {
     func initCardView() {
 //        collectionView.scrollToItem(at: IndexPath(item: 1, section: 0), at: .left, animated: false)
@@ -109,17 +129,19 @@ extension ViewController {
         playFirstVisibleVideo(false)
     }
     
-    func setAutoCardTimer() {
+    @objc func setAutoCardTimer() {
         timer?.invalidate()
         timer = nil
         
-        if nowPage == 0 || cardContents[nowPage].hasSuffix("mov") {
-            timer = Timer.scheduledTimer(withTimeInterval: 13.2, repeats: false) { [weak self] (Timer) in
-                self?.cardMove()
-            }
-        } else {
-            timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] (Timer) in
-                self?.cardMove()
+        if !UIAccessibility.isVoiceOverRunning {
+            if nowPage == 0 || cardContents[nowPage].hasSuffix("mov") {
+                timer = Timer.scheduledTimer(withTimeInterval: 13.2, repeats: false) { [weak self] (Timer) in
+                    self?.cardMove()
+                }
+            } else {
+                timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] (Timer) in
+                    self?.cardMove()
+                }
             }
         }
     }
@@ -136,6 +158,7 @@ extension ViewController {
     }
 }
 
+// MARK: - Scroll View
 extension ViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.frame.size.width != 0 {
@@ -167,6 +190,7 @@ extension ViewController: UIScrollViewDelegate {
     }
 }
 
+// MARK: - CollectionView
 extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         pageControl.numberOfPages = cardContents.count - 2
@@ -190,6 +214,7 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegateFl
     }
 }
 
+// MARK: - Video
 extension ViewController {
     func playFirstVisibleVideo(_ shouldPlay:Bool = true) {
         let cells = collectionView.visibleCells.sorted {
@@ -213,5 +238,27 @@ extension ViewController {
         var cellRect = cell.bounds
         cellRect = cell.convert(cell.bounds, to: collectionView.superview)
         return collectionView.frame.contains(cellRect)
+    }
+}
+
+// MARK: - Accessibility
+extension ViewController: UIScrollViewAccessibilityDelegate {
+    func setVoiceOver() {
+        collectionView.isAccessibilityElement = true
+        pageControl.isAccessibilityElement = false
+    }
+    
+    func accessibilityScrollStatus(for scrollView: UIScrollView) -> String? {
+        var accessibilityString: String = ""
+        
+        if scrollView == self.collectionView {
+            if cardContents[nowPage].hasSuffix(".mov") {
+                accessibilityString = "동영상 \(nowPage)"
+            } else {
+                accessibilityString = "사진 \(nowPage)"
+            }
+        }
+        
+        return accessibilityString
     }
 }
